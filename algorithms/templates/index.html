@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <div>
+        Server hostname: {{ hostname }}
+            {% if hostname %}
+                <span class="info">
+                    welcome to my project
+                </span>
+            {% endif %}
+        Page views: {{ count }}
+    </div>
+
+</body>
+</html>
