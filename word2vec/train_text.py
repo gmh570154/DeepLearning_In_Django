@@ -144,8 +144,8 @@ for epoch in range(10):
     model_dm.train(x_test[perm])
     model_dbow.train(x_test[perm])
 
-model_dbow.save("./dbow.model")
-model_dm.save("./db.model")
+model_dbow.save("dbow.model")
+model_dm.save("db.model")
 
 # 创建测试数据集向量
 test_vecs_dm = getVecs(model_dm, x_test, size)
