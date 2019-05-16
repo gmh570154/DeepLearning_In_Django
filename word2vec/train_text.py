@@ -152,3 +152,10 @@ test_vecs_dm = getVecs(model_dm, x_test, size)
 test_vecs_dbow = getVecs(model_dbow, x_test, size)
 
 test_vecs = np.hstack((test_vecs_dm, test_vecs_dbow))
+
+from sklearn.linear_model  import SGDClassifier
+
+lr = SGDClassifier(loss='log', penalty='l1')
+lr.fit(train_vecs, y_train)
+
+print('Test Accuracy: %.2f' % lr.score(test_vecs, y_test))
