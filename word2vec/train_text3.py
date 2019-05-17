@@ -77,7 +77,7 @@ def sentences_perm(sentences):
     return (shuffled)
 
 
-for epoch in range(1):
+for epoch in range(10):
     model_dm.train(sentences_perm(b), total_examples=model_dm.corpus_count,epochs=1)
     model_dbow.train(sentences_perm(b), total_examples=model_dbow.corpus_count,epochs=1)
 
@@ -96,7 +96,7 @@ train_vecs = np.hstack((train_vecs_dm, train_vecs_dbow))
 c = []
 c.extend(x_test)
 
-for epoch in range(1):
+for epoch in range(10):
     model_dm.train(sentences_perm(c), total_examples=model_dm.corpus_count,epochs=1)
     model_dbow.train(sentences_perm(c), total_examples=model_dbow.corpus_count,epochs=1)
 
@@ -111,3 +111,20 @@ lr = SGDClassifier(loss='log', penalty='l1')
 lr.fit(train_vecs, y_train)
 
 print 'Test Accuracy: %.2f' % lr.score(test_vecs, y_test)
+
+from sklearn.metrics import roc_curve, auc
+
+
+import matplotlib.pyplot as plt
+
+pred_probas = lr.predict_proba(test_vecs)[:, 1]
+
+fpr, tpr, _ = roc_curve(y_test, pred_probas)
+roc_auc = auc(fpr, tpr)
+plt.plot(fpr, tpr, label='area = %.2f' % roc_auc)
+plt.plot([0, 1], [0, 1], 'k--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.legend(loc='lower right')
+
+plt.show()
