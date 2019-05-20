@@ -10,16 +10,16 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDClassifier
 LabeledSentence = gensim.models.doc2vec.LabeledSentence
 path = os.getcwd()
-size = 100
+size = 300
 start = datetime.datetime.now()
 
-with open(path[:-9] + '\\aclImdb\\train\\pos_all.txt', 'r', encoding="utf-8") as infile:
+with open(path[:-9] + '\\aclImdb\\train\\pos_all3.txt', 'r', encoding="utf-8") as infile:
     pos_tweets = infile.readlines()
 
-with open(path[:-9] + '\\aclImdb\\train\\neg_all.txt', 'r', encoding="utf-8") as infile:
+with open(path[:-9] + '\\aclImdb\\train\\neg_all3.txt', 'r', encoding="utf-8") as infile:
     neg_tweets = infile.readlines()
 
-with open(path[:-9] + '\\aclImdb\\train\\unsup_all.txt', 'r', encoding="utf-8") as infile:
+with open(path[:-9] + '\\aclImdb\\train\\unsup_all3.txt', 'r', encoding="utf-8") as infile:
     unsup_reviews = infile.readlines()
 
 # 1 代表积极情绪，0 代表消极情绪
@@ -87,8 +87,9 @@ def sentences_perm(sentences):
 
 
 print("before train")
-for epoch in range(1):
+for epoch in range(3):
     model_dm.train(sentences_perm(b), total_examples=model_dm.corpus_count, epochs=1)
+    print("train one end")
     model_dbow.train(sentences_perm(b), total_examples=model_dbow.corpus_count, epochs=1)
 print("end all train")
 
@@ -108,8 +109,9 @@ print("end get vecs")
 c = []
 c.extend(x_test)
 print("before last train")
-for epoch in range(1):
+for epoch in range(3):
     model_dm.train(sentences_perm(c), total_examples=model_dm.corpus_count,epochs=1)
+    print("train two end")
     model_dbow.train(sentences_perm(c), total_examples=model_dbow.corpus_count,epochs=1)
 print("end last train")
 # 创建测试数据集向量
