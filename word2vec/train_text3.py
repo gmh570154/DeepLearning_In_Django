@@ -3,19 +3,23 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import os
 import gensim
-LabeledSentence = gensim.models.doc2vec.LabeledSentence
-path = os.getcwd()
-size = 100
 import random
 import datetime
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
+from sklearn.linear_model import SGDClassifier
+LabeledSentence = gensim.models.doc2vec.LabeledSentence
+path = os.getcwd()
+size = 300
 start = datetime.datetime.now()
-with open(path[:-9] + '\\aclImdb\\train\\pos_all.txt', 'r', encoding="utf-8") as infile:
+
+with open(path[:-9] + '\\aclImdb\\train\\pos_all3.txt', 'r', encoding="utf-8") as infile:
     pos_tweets = infile.readlines()
 
-with open(path[:-9] + '\\aclImdb\\train\\neg_all.txt', 'r', encoding="utf-8") as infile:
+with open(path[:-9] + '\\aclImdb\\train\\neg_all3.txt', 'r', encoding="utf-8") as infile:
     neg_tweets = infile.readlines()
 
-with open(path[:-9] + '\\aclImdb\\train\\unsup_all.txt', 'r', encoding="utf-8") as infile:
+with open(path[:-9] + '\\aclImdb\\train\\unsup_all3.txt', 'r', encoding="utf-8") as infile:
     unsup_reviews = infile.readlines()
 
 # 1 代表积极情绪，0 代表消极情绪
@@ -34,13 +38,15 @@ def cleanText(corpus):
     corpus = [z.split() for z in corpus]
     return corpus
 
+
 print("start clean Text")
 x_train = cleanText(x_train)
 x_test = cleanText(x_test)
 unsup_reviews = cleanText(unsup_reviews)
 print("end clean text")
 
-# Gensim 的 Doc2Vec 工具要求每个文档/段落包含一个与之关联的标签。我们利用 LabeledSentence 进行处理。格式形如 “TRAIN_i” 或者 “TEST_i”，其中 “i” 是假的评论索引。
+# Gensim 的 Doc2Vec 工具要求每个文档/段落包含一个与之关联的标签。我们利用 LabeledSentence 进行处理。
+# 格式形如 “TRAIN_i” 或者 “TEST_i”，其中 “i” 是假的评论索引。
 def labelizeReviews(reviews, label_type):
     labelized = []
     for i, v in enumerate(reviews):
@@ -73,21 +79,26 @@ b =[]
 b.extend(x_train)
 b.extend(unsup_reviews)
 
+
 def sentences_perm(sentences):
     shuffled = list(sentences)
     random.shuffle(shuffled)
     return (shuffled)
 
+
 print("before train")
-for epoch in range(1):
-    model_dm.train(sentences_perm(b), total_examples=model_dm.corpus_count,epochs=1)
-    model_dbow.train(sentences_perm(b), total_examples=model_dbow.corpus_count,epochs=1)
+for epoch in range(3):
+    model_dm.train(sentences_perm(b), total_examples=model_dm.corpus_count, epochs=1)
+    print("train one end")
+    model_dbow.train(sentences_perm(b), total_examples=model_dbow.corpus_count, epochs=1)
 print("end all train")
+
 
 # 从我们的模型中获得训练过的向量
 def getVecs(model, corpus, size):
     vecs = [np.array(model[z.tags[0]]).reshape((1, size)) for z in corpus]
     return np.concatenate(vecs)
+
 
 print("before get vecs")
 train_vecs_dm = getVecs(model_dm, x_train, size)
@@ -98,8 +109,9 @@ print("end get vecs")
 c = []
 c.extend(x_test)
 print("before last train")
-for epoch in range(1):
+for epoch in range(3):
     model_dm.train(sentences_perm(c), total_examples=model_dm.corpus_count,epochs=1)
+    print("train two end")
     model_dbow.train(sentences_perm(c), total_examples=model_dbow.corpus_count,epochs=1)
 print("end last train")
 # 创建测试数据集向量
@@ -107,22 +119,14 @@ test_vecs_dm = getVecs(model_dm, x_test, size)
 test_vecs_dbow = getVecs(model_dbow, x_test, size)
 test_vecs = np.hstack((test_vecs_dm, test_vecs_dbow))
 print("end get last vecs")
-from sklearn.linear_model import SGDClassifier
 print("start show")
 lr = SGDClassifier(loss='log', penalty='l1')
 lr.fit(train_vecs, y_train)
-
 print('Test Accuracy: %.2f' % lr.score(test_vecs, y_test))
 end = datetime.datetime.now()
 print("运行时长：")
 print(end - start)
-from sklearn.metrics import roc_curve, auc
-
-
-import matplotlib.pyplot as plt 
-
 pred_probas = lr.predict_proba(test_vecs)[:, 1]
-
 fpr, tpr, _ = roc_curve(y_test, pred_probas)
 roc_auc = auc(fpr, tpr)
 plt.plot(fpr, tpr, label='area = %.2f' % roc_auc)
@@ -130,5 +134,4 @@ plt.plot([0, 1], [0, 1], 'k--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.legend(loc='lower right')
-
 plt.show()
