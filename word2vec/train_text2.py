@@ -11,13 +11,13 @@ LabeledSentence = gensim.models.doc2vec.LabeledSentence
 path = os.getcwd()
 size = 400
 
-with open(path[:-9] + '\\aclImdb\\train\\pos_all.txt', 'r') as infile:
+with open(path[:-9] + '\\aclImdb\\train\\pos_all.txt', 'r', encoding="utf-8") as infile:
     pos_tweets = infile.readlines()
 
-with open(path[:-9] + '\\aclImdb\\train\\neg_all.txt', 'r') as infile:
+with open(path[:-9] + '\\aclImdb\\train\\neg_all.txt', 'r', encoding="utf-8") as infile:
     neg_tweets = infile.readlines()
 
-with open(path[:-9] + '\\aclImdb\\train\\unsup_all.txt', 'r') as infile:
+with open(path[:-9] + '\\aclImdb\\train\\unsup_all.txt', 'r', encoding="utf-8") as infile:
     unsup_reviews = infile.readlines()
 
 # 1 代表积极情绪，0 代表消极情绪

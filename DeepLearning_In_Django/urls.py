@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from algorithms import views
+from word2vec import views as web_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', views.add_view_log),
     path('count/', views.get_all_view_logs),
+    path('get_ganji_all/', web_views.get_ganji_all)
 ]
