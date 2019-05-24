@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', views.add_view_log),
     path('count/', views.get_all_view_logs),
-    path('get_ganji_all/', web_views.get_ganji_all)
+    path('get_ganji_all/', web_views.get_ganji_all),
+    path('count1/', views.get_all_view_logs1),
+    path('count2/', views.get_all_view_logs2)
 ]
